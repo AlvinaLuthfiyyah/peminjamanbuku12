@@ -198,7 +198,7 @@
         <div class="auth-side-logo">
             <div class="auth-side-logo-icon"><i class="bi bi-book-half"></i></div>
             <div>
-                <div class="auth-side-brand">LibroHub</div>
+                <div class="auth-side-brand">Library</div>
                 <div class="auth-side-tagline">Perpustakaan Digital</div>
             </div>
         </div>
@@ -213,7 +213,7 @@
         </div>
 
         <div style="font-size:12px; opacity:0.6;">
-            © {{ date('Y') }} LibroHub. Semua hak dilindungi.
+            © {{ date('Y') }} Library. Semua hak dilindungi.
         </div>
     </div>
 

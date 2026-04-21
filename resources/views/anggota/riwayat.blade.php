@@ -16,6 +16,7 @@
                         <th>Buku</th>
                         <th>Tanggal</th>
                         <th>Status</th>
+                        <th>Token</th>
                         <th>Denda</th>
                         <th>Aksi</th>
                     </tr>
@@ -83,24 +84,24 @@
                         </td>
 
                         <td>
-    @if($item->token && !$item->token_used)
-        <div>
-            <span class="badge bg-warning text-dark">
-                Token: <strong>{{ $item->token }}</strong>
-            </span>
-        </div>
-        <div style="margin-top:4px;">
-            <small style="color:#ef4444;">
-                Berlaku sampai:
-                {{ \Carbon\Carbon::parse($item->token_expired_at)->format('d M Y H:i') }}
-            </small>
-        </div>
-    @else
-        <span class="text-muted">-</span>
-    @endif
-</td>
 
-                        
+                        {{-- TOKEN --}}
+                    @if($item->token && !$item->token_used)
+                <div>
+                    <span class="badge bg-warning text-dark">
+                        Token: <strong>{{ $item->token }}</strong>
+                    </span>
+                </div>
+                    <div style="margin-top:4px;">
+                        <small style="color:#ef4444;">
+                        Berlaku sampai:
+                        {{ \Carbon\Carbon::parse($item->token_expired_at)->format('d M Y H:i') }}
+                        </small>
+                    </div>
+                    @else
+                    <span class="text-muted">-</span>
+                    @endif
+                    </td>
 
                         {{-- DENDA --}}
                         <td>

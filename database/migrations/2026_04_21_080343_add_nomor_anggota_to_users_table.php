@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('borrowings', function (Blueprint $table) {
-            $table->timestamp('token_expired_at')->nullable();
-            $table->boolean('token_used')->default(false);
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('nomor_anggota')->nullable()->after('alamat');
         });
     }
 
@@ -22,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('borrowings', function (Blueprint $table) {
-            $table->dropColumn(['token_expired_at', 'token_used']);
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('nomor_anggota');
         });
     }
 };

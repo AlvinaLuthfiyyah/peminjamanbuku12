@@ -191,14 +191,14 @@
         <div class="auth-side-logo">
             <div class="auth-side-logo-icon"><i class="bi bi-book-half"></i></div>
             <div>
-                <div class="auth-side-brand">LibroHub</div>
+                <div class="auth-side-brand">Library</div>
                 <div class="auth-side-tagline">Perpustakaan Digital</div>
             </div>
         </div>
 
         <div>
             <div class="auth-side-headline">
-                Bergabung dengan<br>LibroHub hari ini! <i class="bi bi-rocket-takeoff"></i>
+                Bergabung dengan<br>Library hari ini! <i class="bi bi-rocket-takeoff"></i>
             </div>
             <div class="auth-side-desc">
                 Daftar sekarang dan nikmati kemudahan akses koleksi buku perpustakaan kapan saja dan di mana saja.
@@ -206,7 +206,7 @@
         </div>
 
         <div style="font-size:12px; opacity:0.6;">
-            © {{ date('Y') }} LibroHub. Semua hak dilindungi.
+            © {{ date('Y') }} Library. Semua hak dilindungi.
         </div>
     </div>
 

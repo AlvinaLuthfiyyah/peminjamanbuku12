@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LibroHub – Aplikasi Peminjaman Buku</title>
+    <title>Library – Aplikasi Peminjaman Buku</title>
 
     {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -310,6 +310,7 @@
         .btn-warning {
             font-weight: 500;
             font-size: 14px;
+            margin: 4px;
             border-radius: 8px !important;
             transition: all 0.18s ease;
         }
@@ -317,6 +318,7 @@
         .btn-danger {
             font-weight: 500;
             font-size: 14px;
+            margin: 4px;
             border-radius: 8px !important;
             transition: all 0.18s ease;
         }
@@ -497,7 +499,7 @@
         <a href="{{ route('dashboard') }}" class="sidebar-logo">
             <div class="sidebar-logo-icon"><i class="ph-fill ph-book-open-text"></i></div>
             <div>
-                <div class="sidebar-logo-text">LibroHub</div>
+                <div class="sidebar-logo-text">Library</div>
                 <span class="sidebar-logo-sub">Perpustakaan Digital</span>
             </div>
         </a>
@@ -528,6 +530,12 @@
                 <i class="ph-duotone ph-clipboard-text"></i>
                 Data Peminjaman
             </a>
+
+            <a href="{{ route('anggota.index') }}"
+   class="nav-link-item {{ request()->routeIs('anggota.*') ? 'active' : '' }}">
+    <i class="ph-duotone ph-users"></i>
+    Kelola Anggota
+</a>
         @endif
 
         @if(auth()->user()->role === 'anggota')
@@ -544,6 +552,8 @@
                 <i class="ph-duotone ph-clock-counter-clockwise"></i>
                 Riwayat Peminjaman
             </a>
+        
+
         @endif
 
         <div class="nav-section-label">Akun</div>

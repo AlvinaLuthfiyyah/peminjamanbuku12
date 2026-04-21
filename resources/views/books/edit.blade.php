@@ -25,7 +25,7 @@
                     @method('PUT')
 
                     {{-- JUDUL --}}
-                    <div class="mb-4">
+                    <div class="col-md-6 mb-4">
                         <label class="form-label">
                             <i class="bi bi-type me-1" style="color:#2563eb;"></i>
                             Judul Buku <span style="color:#ef4444;">*</span>
@@ -40,7 +40,7 @@
                     </div>
 
                     {{-- PENULIS --}}
-                    <div class="mb-4">
+                    <div class="col-md-6 mb-4">
                         <label class="form-label">
                             <i class="bi bi-person me-1" style="color:#2563eb;"></i>
                             Nama Penulis <span style="color:#ef4444;">*</span>
@@ -55,7 +55,7 @@
                     </div>
 
                     {{-- DESKRIPSI --}}
-                    <div class="mb-4">
+                    <div class="col-md-6 mb-4">
                         <label class="form-label">
                             <i class="bi bi-text-paragraph me-1" style="color:#2563eb;"></i>
                             Deskripsi / Sinopsis
@@ -65,7 +65,7 @@
                     </div>
 
                     {{-- STOK --}}
-                    <div class="mb-4">
+                    <div class="col-md-6 mb-4">
                         <label class="form-label">
                             <i class="bi bi-stack me-1" style="color:#2563eb;"></i>
                             Jumlah Stok <span style="color:#ef4444;">*</span>
@@ -82,7 +82,7 @@
 
                     {{-- COVER SAAT INI --}}
                     @if($book->cover)
-                        <div class="mb-4">
+                        <div class="col-md-6 mb-4">
                             <label class="form-label">
                                 <i class="bi bi-image me-1" style="color:#2563eb;"></i>
                                 Cover Saat Ini
