@@ -49,8 +49,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/peminjaman/{borrowing}/return', [AdminBorrowingController::class, 'return'])
             ->name('admin.return');
 
-         Route::post('/peminjaman/{id}/approve', [AdminBorrowingController::class, 'approve'])
+        Route::post('/peminjaman/{id}/approve', [AdminBorrowingController::class, 'approve'])
             ->name('admin.approve');
+
+        Route::post('/peminjaman/{id}/cancel', [AdminBorrowingController::class, 'cancel'])
+            ->name('admin.cancel');
 
         Route::post('/validasi-token', [AdminBorrowingController::class, 'validasiToken'])
             ->name('admin.validasi.token');
@@ -72,9 +75,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/pinjam/{book}', [BorrowingController::class, 'store'])
             ->name('pinjam');
-
-        Route::post('/kembalikan/{borrowing}', [BorrowingController::class, 'return'])
-            ->name('kembalikan');
     });
 
 });

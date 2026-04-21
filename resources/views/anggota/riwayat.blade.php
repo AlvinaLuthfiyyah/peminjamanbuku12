@@ -82,23 +82,51 @@
                             @endif
                         </td>
 
+                        {{-- TOKEN PENGAMBILAN --}}
                         <td>
-    @if($item->token && !$item->token_used)
-        <div>
-            <span class="badge bg-warning text-dark">
-                Token: <strong>{{ $item->token }}</strong>
-            </span>
-        </div>
-        <div style="margin-top:4px;">
-            <small style="color:#ef4444;">
-                Berlaku sampai:
-                {{ \Carbon\Carbon::parse($item->token_expired_at)->format('d M Y H:i') }}
-            </small>
-        </div>
-    @else
-        <span class="text-muted">-</span>
-    @endif
-</td>
+                            @php $ts = $item->tokenStatus(); @endphp
+
+                            @if($ts === 'active')
+                                {{-- Token aktif — tampilkan mencolok agar mudah dibaca --}}
+                                <div style="background:#eff6ff; border:1.5px solid #2563eb; border-radius:8px; padding:8px 12px; display:inline-block;">
+                                    <div style="font-size:10px; color:#2563eb; font-weight:600; margin-bottom:2px;">TOKEN PENGAMBILAN</div>
+                                    <div style="font-family:monospace; font-weight:700; font-size:18px; color:#1d4ed8; letter-spacing:3px;">
+                                        {{ $item->token }}
+                                    </div>
+                                    <div style="font-size:10px; color:#16a34a; margin-top:3px;">
+                                        ✅ Berlaku hingga {{ \Carbon\Carbon::parse($item->token_expired_at)->format('d M Y H:i') }}
+                                    </div>
+                                </div>
+
+                            @elseif($ts === 'used')
+                                {{-- Token sudah dipakai — one-time use --}}
+                                <div style="display:inline-block; text-align:center;">
+                                    <div style="font-family:monospace; font-size:12px; color:#94a3b8; text-decoration:line-through;">
+                                        {{ $item->token }}
+                                    </div>
+                                    <span class="badge" style="background:#d1fae5; color:#065f46; font-size:11px;">
+                                        ✔ Token sudah digunakan
+                                    </span>
+                                </div>
+
+                            @elseif($ts === 'expired')
+                                {{-- Token expired — lebih dari 24 jam sejak approval --}}
+                                <div style="display:inline-block; text-align:center;">
+                                    <div style="font-family:monospace; font-size:12px; color:#94a3b8; text-decoration:line-through;">
+                                        {{ $item->token }}
+                                    </div>
+                                    <span class="badge" style="background:#fee2e2; color:#991b1b; font-size:11px;">
+                                        ⌛ Token expired
+                                    </span>
+                                    <div style="font-size:10px; color:#94a3b8; margin-top:2px;">
+                                        Hubungi admin untuk token baru
+                                    </div>
+                                </div>
+
+                            @else
+                                <span class="text-muted" style="font-size:12px;">Menunggu approval</span>
+                            @endif
+                        </td>
 
                         
 
@@ -116,19 +144,14 @@
                         {{-- AKSI --}}
                         <td>
                             @if($item->status == 'dipinjam')
-                                <form action="/kembalikan/{{ $item->id }}" method="POST"
-                                      onsubmit="return confirm('Yakin mau kembalikan buku ini?')">
-                                    @csrf
-                                    <button class="btn btn-success btn-sm">
-                                        Kembalikan
-                                    </button>
-                                </form>
-
+                                <span class="text-primary" style="font-size:12px; font-weight:500;">Silahkan ambil/baca buku anda.</span>
+                                <div style="font-size:10px; color:#64748b; margin-top:2px;">
+                                    (Serahkan fisik ke admin untuk mengembalikan)
+                                </div>
                             @elseif($item->status == 'menunggu')
-                                <span class="text-muted">Menunggu approval</span>
-
+                                <span class="text-muted" style="font-size:12px;">Menunggu approval admin</span>
                             @else
-                                <span class="text-muted">Selesai</span>
+                                <span class="text-success" style="font-size:12px; font-weight:600;">Selesai</span>
                             @endif
                         </td>
 

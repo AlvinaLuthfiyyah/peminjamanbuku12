@@ -3,94 +3,81 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Borrowing;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
+use App\Services\Borrowing\BorrowingInterface;
 
 class AdminBorrowingController extends Controller
 {
+    private BorrowingInterface $borrowingService;
+
+    public function __construct(BorrowingInterface $borrowingService)
+    {
+        $this->borrowingService = $borrowingService;
+    }
+
     public function index()
     {
-        $borrowings = Borrowing::with(['user', 'book'])->latest()->get();
+        $borrowings = $this->borrowingService->getAllWithRelations();
         return view('admin.borrowings.index', compact('borrowings'));
     }
 
-    public function return($id)
+    // =========================================================
+    // APPROVE
+    // =========================================================
+    public function approve(string $id)
     {
-        $borrowing = Borrowing::findOrFail($id);
-
-        if ($borrowing->status === 'dikembalikan') {
-            return back()->with('error', 'Sudah dikembalikan');
+        try {
+            $result = $this->borrowingService->approveBorrowing($id);
+            $token = $result['token'];
+            return back()->with('success', "Peminjaman disetujui. Token pengambilan: {$token} (berlaku 24 jam).");
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
+    }
 
-        // HITUNG TERLAMBAT DARI TANGGAL RENCANA
-        $telat = now()->diffInDays($borrowing->tanggal_kembali_rencana, false);
-
-        $denda = 0;
-        if ($telat > 0) {
-            $denda = $telat * 1000;
-        }
-
-        $borrowing->update([
-            'status' => 'dikembalikan',
-            'tanggal_kembali' => now(),
-            'denda' => $denda
+    // =========================================================
+    // VALIDASI TOKEN
+    // =========================================================
+    public function validasiToken(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string'
         ]);
 
-        $borrowing->book->increment('stok');
-
-        return back()->with('success', 'Buku dikembalikan');
+        try {
+            $result = $this->borrowingService->validateToken($request->token);
+            $nama = $result['nama'];
+            $judul = $result['judul'];
+            return back()->with('success', "✅ Token valid. Buku \"{$judul}\" boleh diambil oleh {$nama}.");
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
-    public function approve($id)
-{
-    $borrowing = Borrowing::findOrFail($id);
-
-    $book = $borrowing->book;
-
-     $now = now();
-
-    // ✅ Generate token random
-    $token = strtoupper(Str::random(8));
-
-    $borrowing->update([
-        'status' => 'dipinjam',
-        'token' => $token,
-        'token_expired_at' => $now->copy()->addDay(),
-        'token_used' => false
-    ]);
-
-    $book->decrement('stok');
-
-    return back()->with('success', 'Peminjaman disetujui + token dibuat');
-}
-
-public function validasiToken(Request $request)
-{
-    $request->validate([
-        'token' => 'required'
-    ]);
-
-    $borrowing = Borrowing::where('token', $request->token)->first();
-
-    if (!$borrowing) {
-        return back()->with('error', 'Token tidak ditemukan');
+    // =========================================================
+    // RETURN BUKU
+    // =========================================================
+    public function return(string $id)
+    {
+        try {
+            $result = $this->borrowingService->returnBorrowing($id);
+            $denda = $result['denda'];
+            $dendaMsg = $denda > 0 ? " Denda: Rp " . number_format($denda) : '';
+            return back()->with('success', 'Buku berhasil dikembalikan.' . $dendaMsg);
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
-    if ($borrowing->token_used) {
-        return back()->with('error', 'Token sudah digunakan');
+    // =========================================================
+    // BATAL PENGEMBALIAN / BATAL PINJAM (Bila expired)
+    // =========================================================
+    public function cancel(string $id)
+    {
+        try {
+            $this->borrowingService->cancelBorrowing($id);
+            return back()->with('success', 'Peminjaman berhasil dibatalkan dan stok dikembalikan.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
-
-    if (now()->gt($borrowing->token_expired_at)) {
-        return back()->with('error', 'Token sudah expired');
-    }
-
-    // ✅ tandai sudah dipakai
-    $borrowing->update([
-        'token_used' => true
-    ]);
-
-    return back()->with('success', 'Token valid, buku boleh diambil');
-}
-
 }

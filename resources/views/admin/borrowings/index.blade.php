@@ -90,34 +90,51 @@
                         </td>
 
                         {{-- TOKEN --}}
-                        <td style="min-width:160px;">
+                        <td style="min-width:180px;">
+                            @php $ts = $item->tokenStatus(); @endphp
 
-                            @if($item->token && !$item->token_used)
-
-                                <div style="font-weight:700; color:#2563eb;">
+                            @if($ts === 'active')
+                                {{-- Token aktif: belum digunakan & belum expired --}}
+                                <div style="font-family:monospace; font-weight:700; font-size:15px; color:#2563eb; letter-spacing:2px;">
                                     {{ $item->token }}
                                 </div>
-
-                                {{-- EXPIRED --}}
-                                @if($item->token_expired_at && $item->token_expired_at->isPast())
-                                    <div style="font-size:11px; color:#ef4444;">
-                                        ❌ Expired
-                                    </div>
-                                @else
-                                    <div style="font-size:11px; color:#64748b;">
-                                        Exp:
-                                        {{ $item->token_expired_at->format('d M Y H:i') }}
+                                <div style="font-size:11px; color:#16a34a; margin-top:2px;">
+                                    ✅ Aktif
+                                </div>
+                                <div style="font-size:10px; color:#64748b;">
+                                    Berlaku s/d: {{ $item->token_expired_at->format('d M Y H:i') }}
+                                </div>
+                                @if($item->token_approved_at)
+                                    <div style="font-size:10px; color:#94a3b8;">
+                                        Approved: {{ $item->token_approved_at->format('d M Y H:i') }}
                                     </div>
                                 @endif
 
-                            @elseif($item->token_used)
+                            @elseif($ts === 'used')
+                                {{-- Token sudah digunakan (one-time use) --}}
+                                <div style="font-family:monospace; font-size:13px; color:#94a3b8; text-decoration:line-through;">
+                                    {{ $item->token }}
+                                </div>
                                 <span style="font-size:12px; color:#10b981; font-weight:600;">
-                                    ✔ Digunakan
+                                    ✔ Sudah Digunakan
                                 </span>
-                            @else
-                                -
-                            @endif
 
+                            @elseif($ts === 'expired')
+                                {{-- Token ada tapi sudah melewati 24 jam --}}
+                                <div style="font-family:monospace; font-size:13px; color:#94a3b8; text-decoration:line-through;">
+                                    {{ $item->token }}
+                                </div>
+                                <div style="font-size:11px; color:#ef4444; font-weight:600;">
+                                    ⌛ Expired
+                                </div>
+                                <div style="font-size:10px; color:#94a3b8;">
+                                    Expired: {{ $item->token_expired_at->format('d M Y H:i') }}
+                                </div>
+
+                            @else
+                                {{-- Belum ada token (masih menunggu atau sudah dikembalikan) --}}
+                                <span class="text-muted">—</span>
+                            @endif
                         </td>
 
                         {{-- STATUS --}}
@@ -143,21 +160,38 @@
 
                             {{-- APPROVE --}}
                             @if($item->status == 'menunggu')
-                                <form action="{{ route('admin.approve', $item->id) }}" method="POST">
-                                    @csrf
-                                    <button class="btn btn-sm btn-success">
-                                        Approve
-                                    </button>
-                                </form>
+                                <div style="display:flex; gap:5px;">
+                                    <form action="{{ route('admin.approve', $item->id) }}" method="POST">
+                                        @csrf
+                                        <button class="btn btn-sm btn-success">
+                                            Approve
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.cancel', $item->id) }}" method="POST" onsubmit="return confirm('Tolak peminjaman ini?');">
+                                        @csrf
+                                        <button class="btn btn-sm btn-danger">Tolak</button>
+                                    </form>
+                                </div>
 
                             {{-- RETURN --}}
                             @elseif($item->status == 'dipinjam')
-                                <form action="{{ route('admin.return', $item->id) }}" method="POST">
-                                    @csrf
-                                    <button class="btn btn-sm btn-primary">
-                                        Kembalikan
-                                    </button>
-                                </form>
+                                <div style="display:flex; gap:5px; flex-direction:column;">
+                                    @if($item->token_used)
+                                        <form action="{{ route('admin.return', $item->id) }}" method="POST" onsubmit="return confirm('Fisik buku sudah dikembalikan?');">
+                                            @csrf
+                                            <button class="btn btn-sm btn-primary w-100">
+                                                Kembalikan Fisik
+                                            </button>
+                                        </form>
+                                    @else
+                                        <form action="{{ route('admin.cancel', $item->id) }}" method="POST" onsubmit="return confirm('Buku belum diambil dan akan dibatalkan/stok dikembalikan?');">
+                                            @csrf
+                                            <button class="btn btn-sm btn-outline-danger w-100">
+                                                Batalkan & Kembalikan Stok
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
 
                             @else
                                 <span class="text-muted">Selesai</span>
