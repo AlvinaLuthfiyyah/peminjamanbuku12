@@ -30,13 +30,17 @@ class RegisteredUserController extends Controller
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
         'password' => ['required', 'confirmed', 'min:6'],
+        'no_hp' => ['required', 'regex:/^[0-9+]+$/'],
+        'alamat' => ['required', 'string'],
     ]);
 
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => bcrypt($request->password),
-        'status' => 'pending', // ⬅️ penting!
+        'no_hp' => $request->no_hp,
+        'alamat' => $request->alamat,
+        'status' => 'pending', 
     ]);
 
     event(new Registered($user));

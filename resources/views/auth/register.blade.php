@@ -308,7 +308,10 @@
                 </label>
                 <input type="text" name="no_hp"
                        class="form-control"
+                       pattern="^\+?[0-9]+$"
+                       inputmode="numeric"
                        placeholder="Masukkan No Telepon"
+                        oninput="this.value = this.value.replace(/[^0-9+]/g, '')"
                        required>
             </div>
 

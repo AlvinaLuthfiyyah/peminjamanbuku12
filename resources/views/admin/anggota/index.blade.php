@@ -79,8 +79,8 @@
     </td>
 
     <!-- AKSI -->
-    <td class="d-flex gap-2">
-
+    <td>
+        <div class="d-flex align-items-center gap-2">
         <!-- APPROVE (hanya jika pending) -->
         @if($user->status != 'approved')
         <form action="{{ route('anggota.approve', $user->id) }}" method="POST">
@@ -105,7 +105,7 @@
                 Hapus
             </button>
         </form>
-
+        </div>
     </td>
 </tr>
 @empty

@@ -26,13 +26,15 @@ class AnggotaController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email',
-            'phone' => 'required|numeric'
+            'no_hp' => 'required|regex:/^[0-9+]+$/',
+            'alamat' => 'required',
         ]);
 
         $anggota->update([
             'name' => $request->name,
             'email' => $request->email,
-            'no_hp' => $request->no_hp
+            'no_hp' => $request->no_hp,
+            'alamat' => $request->alamat,
         ]);
 
         return redirect()->route('anggota.index')

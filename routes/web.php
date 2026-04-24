@@ -15,6 +15,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
 
+    // ================= DASHBOARD =================
     Route::get('/dashboard', function () {
 
         if (auth()->user()->role === 'admin') {
@@ -22,13 +23,6 @@ Route::middleware(['auth'])->group(function () {
         }
 
         return redirect()->route('anggota.dashboard');
-
-    Route::get('/peminjaman', [BorrowingController::class, 'index'])->name('peminjaman');
-
-    Route::post('/pinjam', [BorrowingController::class, 'store'])->name('pinjam');
-
-    Route::post('/kembalikan/{id}', [BorrowingController::class, 'kembalikan'])
-        ->name('kembalikan');
 
     })->name('dashboard');
 
@@ -50,22 +44,22 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/books/{book}/detail', [BookController::class, 'show'])
             ->name('books.detail');
 
-        Route::get('/peminjaman', [AdminBorrowingController::class, 'index'])
+        // 🔥 ADMIN PEMINJAMAN
+        Route::get('/admin/peminjaman', [AdminBorrowingController::class, 'index'])
             ->name('admin.borrowings');
 
-        Route::get('/peminjam/{user}', [AdminBorrowingController::class, 'showUser'])
-            ->name('admin.user.show');
-
-        Route::post('/peminjaman/{borrowing}/return', [AdminBorrowingController::class, 'return'])
-            ->name('admin.return');
-
-        Route::post('/peminjaman/{id}/approve', [AdminBorrowingController::class, 'approve'])
+        Route::post('/admin/peminjaman/{id}/approve', [AdminBorrowingController::class, 'approve'])
             ->name('admin.approve');
 
-        Route::post('/validasi-token', [AdminBorrowingController::class, 'validasiToken'])
+        Route::post('/admin/peminjaman/{id}/return', [AdminBorrowingController::class, 'return'])
+            ->name('admin.return');
+
+        Route::post('/admin/validasi-token', [AdminBorrowingController::class, 'validasiToken'])
             ->name('admin.validasi.token');
 
-        Route::post('/anggota/{id}/approve', [UserController::class, 'approve'])
+
+        // ================= APPROVAL USER =================
+        Route::post('/admin/anggota/{id}/approve', [UserController::class, 'approve'])
             ->name('anggota.approve');
 
 
@@ -100,10 +94,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/riwayat', [BorrowingController::class, 'index'])
             ->name('riwayat');
 
-        Route::post('/pinjam/{book}', [BorrowingController::class, 'store'])
+        Route::post('/pinjam', [BorrowingController::class, 'store'])
             ->name('pinjam');
 
-        // ✅ FIX UTAMA
         Route::post('/kembalikan/{id}', [BorrowingController::class, 'kembalikan'])
             ->name('anggota.kembalikan');
     });

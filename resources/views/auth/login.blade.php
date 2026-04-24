@@ -217,14 +217,14 @@
         </div>
     </div>
 
-    @if(session('success'))
+    {{-- MAIN FORM --}}
+    <div class="auth-main">
+        
+        @if(session('success'))
     <div class="alert alert-warning">
         {{ session('success') }}
     </div>
 @endif
-
-    {{-- MAIN FORM --}}
-    <div class="auth-main">
 
         <div class="auth-title">Selamat Datang <i class="bi bi-person-check ms-1" style="color: #2563eb;"></i></div>
         <div class="auth-subtitle">Masuk ke akunmu untuk melanjutkan</div>

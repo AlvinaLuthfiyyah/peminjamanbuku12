@@ -7,6 +7,7 @@ use App\Models\Borrowing;
 use App\Models\Book;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class BorrowingController extends Controller
 {
@@ -15,7 +16,6 @@ class BorrowingController extends Controller
     // =========================
     public function index()
     {
-        // ✅ AMBIL DATA + PAGINATION
         if (Auth::user()->role == 'admin') {
             $borrowings = Borrowing::with(['user', 'book'])
                 ->latest()
@@ -27,30 +27,10 @@ class BorrowingController extends Controller
                 ->paginate(10);
         }
 
-        // ✅ AUTO DENDA (HANYA YANG MASIH DIPINJAM)
-        foreach ($borrowings as $item) {
+        // [FIX] Kalkulasi denda dilakukan on-the-fly di sini tanpa update DB.
+        // Untuk update DB otomatis, gunakan Laravel Scheduler di App\Console\Kernel.
+        // Contoh scheduler: $schedule->call(function () { ... })->daily();
 
-            if ($item->status != 'dipinjam') {
-                continue;
-            }
-
-            $today = Carbon::today();
-            $dueDate = Carbon::parse($item->tanggal_kembali);
-
-            $lateDays = $dueDate->diffInDays($today, false);
-
-            if ($lateDays > 0) {
-                $denda = $lateDays * 1000;
-
-                if ($item->denda != $denda) {
-                    $item->update([
-                        'denda' => $denda
-                    ]);
-                }
-            }
-        }
-
-        // ✅ RETURN VIEW (HARUS DI LUAR FOREACH)
         if (Auth::user()->role == 'admin') {
             return view('admin.borrowings.index', compact('borrowings'));
         } else {
@@ -64,19 +44,39 @@ class BorrowingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'book_id' => 'required|exists:books,id'
+            'book_id' => 'required|exists:books,id',
+            'durasi'  => 'required|integer|min:1|max:30'
         ]);
+
+        $durasi = (int) $request->durasi;
+        $book   = Book::findOrFail($request->book_id);
+
+        if ($book->stok <= 0) {
+            return back()->with('error', 'Stok buku habis');
+        }
+
+        $token   = 'TRX-' . strtoupper(Str::random(8));
+        $now     = now();
+        $expired = $now->copy()->addDay(); // [FIX] Dipakai di token_expired_at
 
         Borrowing::create([
-            'user_id' => Auth::id(),
-            'book_id' => $request->book_id,
-            'tanggal_pinjam' => Carbon::today(),
-            'tanggal_kembali' => Carbon::today()->addDays(3),
-            'status' => 'dipinjam',
-            'denda' => 0
+            'user_id'          => Auth::id(),
+            'book_id'          => $request->book_id,
+            'tanggal_pinjam'   => $now,
+            'tanggal_kembali'  => $now->copy()->addDays($durasi),
+            'durasi'           => $durasi,
+            'status'           => 'menunggu',
+            'denda'            => 0,
+            'token'            => $token,
+            'token_expired_at' => $expired, // [FIX] Bukan null lagi
+            'token_used'       => false,
         ]);
 
-        return redirect()->back()->with('success', 'Buku berhasil dipinjam');
+        // [FIX] Kurangi stok setelah peminjaman dibuat
+        $book->decrement('stok');
+
+        return redirect()->route('riwayat')
+            ->with('success', 'Pengajuan peminjaman berhasil, menunggu approval admin');
     }
 
     // =========================
@@ -86,27 +86,57 @@ class BorrowingController extends Controller
     {
         $borrowing = Borrowing::findOrFail($id);
 
-        // ❗ JANGAN PROSES LAGI KALAU SUDAH DIKEMBALIKAN
+        // [FIX] Pastikan hanya pemilik yang bisa kembalikan
+        if ($borrowing->user_id !== Auth::id()) {
+            abort(403, 'Akses tidak diizinkan');
+        }
+
         if ($borrowing->status == 'dikembalikan') {
             return back()->with('error', 'Buku sudah dikembalikan');
         }
 
-        $today = Carbon::today();
-        $dueDate = Carbon::parse($borrowing->tanggal_kembali);
-
+        $today    = now();
+        $dueDate  = Carbon::parse($borrowing->tanggal_kembali);
         $lateDays = $dueDate->diffInDays($today, false);
+        $denda    = $lateDays > 0 ? $lateDays * 1000 : 0;
 
-        if ($lateDays > 0) {
-            $denda = $lateDays * 1000;
-        } else {
-            $denda = 0;
-        }
+        // Kembalikan stok
+        $borrowing->book->increment('stok');
 
         $borrowing->update([
             'status' => 'dikembalikan',
-            'denda' => $denda
+            'denda'  => $denda,
         ]);
 
-        return redirect()->back()->with('success', 'Buku dikembalikan');
+        return back()->with('success', 'Buku berhasil dikembalikan');
+    }
+
+    // =========================
+    // APPROVE PEMINJAMAN
+    // =========================
+    public function approve($id)
+    {
+        // [FIX] Hanya admin yang boleh approve
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Akses tidak diizinkan');
+        }
+
+        $borrowing = Borrowing::findOrFail($id);
+        $book      = $borrowing->book;
+
+        if ($book->stok <= 0) {
+            return back()->with('error', 'Stok habis!');
+        }
+
+        $token = 'TRX-' . strtoupper(Str::random(8));
+
+        $borrowing->update([
+            'status'           => 'approved',
+            'token'            => $token,
+            'token_expired_at' => now()->addDay(),
+            'token_used'       => false,
+        ]);
+
+        return back()->with('success', 'Disetujui + token dibuat');
     }
 }

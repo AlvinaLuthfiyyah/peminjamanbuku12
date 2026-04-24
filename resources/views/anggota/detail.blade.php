@@ -3,6 +3,18 @@
 
 @section('content')
 
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
 {{-- BACK --}}
 <div style="margin-bottom:20px;">
     <a href="{{ url()->previous() }}"
@@ -81,24 +93,29 @@
                             Ajukan Peminjaman
                         </h6>
 
-                        <form action="/pinjam/{{ $book->id }}" method="POST">
-                            @csrf
-                            <div style="display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap;">
-                                <div>
-                                    <label style="font-size:12px; font-weight:600; color:#64748b; display:block; margin-bottom:6px;">
-                                        Durasi Peminjaman (hari)
-                                    </label>
-                                    <input type="number" name="durasi"
-                                           class="form-control"
-                                           placeholder="1 – 30 hari"
-                                           min="1" max="30" required
-                                           style="width:160px;">
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="height:42px; padding:0 20px;">
-                                    <i class="bi bi-send me-2"></i>Pinjam Buku
-                                </button>
-                            </div>
-                        </form>
+                        <form action="{{ route('pinjam') }}" method="POST">
+    @csrf
+
+    {{-- WAJIB INI --}}
+    <input type="hidden" name="book_id" value="{{ $book->id }}">
+
+    <div style="display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap;">
+        <div>
+            <label style="font-size:12px; font-weight:600; color:#64748b; display:block; margin-bottom:6px;">
+                Durasi Peminjaman (hari)
+            </label>
+            <input type="number" name="durasi"
+                   class="form-control"
+                   placeholder="1 – 30 hari"
+                   min="1" max="30" required
+                   style="width:160px;">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="height:42px; padding:0 20px;">
+            <i class="bi bi-send me-2"></i>Pinjam Buku
+        </button>
+    </div>
+</form>
                     </div>
 
                     {{-- INFO PEMINJAMAN --}}

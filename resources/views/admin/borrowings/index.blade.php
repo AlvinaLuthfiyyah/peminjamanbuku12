@@ -90,35 +90,36 @@
                         </td>
 
                         {{-- TOKEN --}}
-                        <td style="min-width:160px;">
+<td style="min-width:160px;">
 
-                            @if($item->token && !$item->token_used)
+    @if($item->token && !$item->token_used)
 
-                                <div style="font-weight:700; color:#2563eb;">
-                                    {{ $item->token }}
-                                </div>
+        <div style="font-weight:700; color:#2563eb;">
+            {{ $item->token }}
+        </div>
 
-                                {{-- EXPIRED --}}
-                                @if($item->token_expired_at && $item->token_expired_at->isPast())
-                                    <div style="font-size:11px; color:#ef4444;">
-                                        ❌ Expired
-                                    </div>
-                                @else
-                                    <div style="font-size:11px; color:#64748b;">
-                                        Exp:
-                                        {{ $item->token_expired_at->format('d M Y H:i') }}
-                                    </div>
-                                @endif
+        {{-- EXPIRED --}}
+        @php $expAt = $item->token_expired_at ? \Carbon\Carbon::parse($item->token_expired_at) : null; @endphp
 
-                            @elseif($item->token_used)
-                                <span style="font-size:12px; color:#10b981; font-weight:600;">
-                                    ✔ Digunakan
-                                </span>
-                            @else
-                                -
-                            @endif
+        @if($expAt && $expAt->isPast())
+            <div style="font-size:11px; color:#ef4444;">
+                ❌ Expired
+            </div>
+        @else
+            <div style="font-size:11px; color:#64748b;">
+                Exp: {{ $expAt?->format('d M Y H:i') ?? '-' }}
+            </div>
+        @endif
 
-                        </td>
+    @elseif($item->token_used)
+        <span style="font-size:12px; color:#10b981; font-weight:600;">
+            ✔ Digunakan
+        </span>
+    @else
+        -
+    @endif
+
+</td>
 
                         {{-- STATUS --}}
                         <td>
