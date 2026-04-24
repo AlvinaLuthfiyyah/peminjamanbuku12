@@ -165,6 +165,15 @@
             text-decoration: none;
         }
 
+        .alert-success {
+    border-radius: 10px !important;
+    border: none !important;
+    background: #ecfdf5 !important;
+    color: #065f46 !important;
+    border-left: 4px solid #10b981 !important;
+    font-size: 13px;
+}
+
         .auth-link a:hover { text-decoration: underline; }
 
         .alert-danger {
@@ -191,14 +200,14 @@
         <div class="auth-side-logo">
             <div class="auth-side-logo-icon"><i class="bi bi-book-half"></i></div>
             <div>
-                <div class="auth-side-brand">LibroHub</div>
+                <div class="auth-side-brand">Library</div>
                 <div class="auth-side-tagline">Perpustakaan Digital</div>
             </div>
         </div>
 
         <div>
             <div class="auth-side-headline">
-                Bergabung dengan<br>LibroHub hari ini! <i class="bi bi-rocket-takeoff"></i>
+                Bergabung dengan<br>Library hari ini! <i class="bi bi-rocket-takeoff"></i>
             </div>
             <div class="auth-side-desc">
                 Daftar sekarang dan nikmati kemudahan akses koleksi buku perpustakaan kapan saja dan di mana saja.
@@ -206,9 +215,15 @@
         </div>
 
         <div style="font-size:12px; opacity:0.6;">
-            © {{ date('Y') }} LibroHub. Semua hak dilindungi.
+            © {{ date('Y') }} Library. Semua hak dilindungi.
         </div>
     </div>
+
+    @if(session('success'))
+    <div class="alert alert-success mb-3">
+        {{ session('success') }}
+    </div>
+@endif
 
     {{-- FORM --}}
     <div class="auth-main">
@@ -288,25 +303,28 @@
 
             <div class="mb-3">
                 <label class="form-label">
-                    <i class="bi bi-lock me-1" style="color:#2563eb;"></i>
+                    <i class="bi bi-telephone me-1" style="color:#2563eb;"></i>
                     No HP
                 </label>
                 <input type="text" name="no_hp"
                        class="form-control"
+                       pattern="^\+?[0-9]+$"
+                       inputmode="numeric"
                        placeholder="Masukkan No Telepon"
+                        oninput="this.value = this.value.replace(/[^0-9+]/g, '')"
                        required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">
-                    <i class="bi bi-lock me-1" style="color:#2563eb;"></i>
+                    <i class="bi bi-geo-alt me-1" style="color:#2563eb;"></i>
                     Alamat
                 </label>
                 <textarea name="alamat"
-                       class="form-control"
-                       placeholder="Masukkan Alamat"
-                       required>
-                </textarea>
+    class="form-control"
+    placeholder="Masukkan alamat lengkap"
+    rows="3"
+    required>{{ old('alamat') }}</textarea>
             </div>
             
 
@@ -321,6 +339,16 @@
             <a href="{{ route('login') }}">Masuk di sini</a>
         </div>
 
+       <div style="
+    background:#eff6ff;
+    color:#1e3a8a;
+    padding:12px;
+    border-radius:10px;
+    font-size:13px;
+    margin-top:16px;
+">
+    ℹ️ Setelah daftar, akun kamu harus disetujui admin terlebih dahulu.
+</div>
     </div>
 </div>
 

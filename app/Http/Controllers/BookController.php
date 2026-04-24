@@ -24,19 +24,47 @@ class BookController extends Controller
     public function dashboard(Request $request)
     {
         $search = $request->search;
+<<<<<<< HEAD
         $books = $this->bookService->searchBooks($search);
         
+=======
+
+        $books = Book::when($search, function ($query, $search) {
+            $query->where('judul', 'like', "%{$search}%")
+                  ->orWhere('penulis', 'like', "%{$search}%");
+        })->paginate(10);
+
+>>>>>>> 4cbfe0c1ccd138ae29ba694be9cba2bd5ba3058e
         return view('anggota.dashboard', compact('books', 'search'));
     }
 
     // ==========================
     // 📚 ADMIN CRUD
     // ==========================
+<<<<<<< HEAD
     public function index()
     {
         $books = $this->bookService->getAll();
         return view('books.index', compact('books'));
+=======
+    public function index(Request $request)
+{
+    $query = Book::query();
+
+    // SEARCH
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->where('judul', 'like', '%' . $request->search . '%')
+              ->orWhere('penulis', 'like', '%' . $request->search . '%');
+        });
+>>>>>>> 4cbfe0c1ccd138ae29ba694be9cba2bd5ba3058e
     }
+
+    // PAGINATION + KEEP SEARCH PARAM
+    $books = $query->latest()->paginate(10)->withQueryString();
+
+    return view('books.index', compact('books'));
+}
 
     public function create()
     {
@@ -51,6 +79,8 @@ class BookController extends Controller
         $validated = $request->validate([
             'judul' => 'required',
             'penulis' => 'required',
+            'genre' => 'required',
+            'penerbit' => 'nullable',
             'deskripsi' => 'nullable',
             'stok' => 'required|integer',
             'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
@@ -83,6 +113,8 @@ class BookController extends Controller
         $validated = $request->validate([
             'judul' => 'required',
             'penulis' => 'required',
+            'genre' => 'required',
+            'penerbit' => 'nullable',
             'deskripsi' => 'nullable',
             'stok' => 'required|integer',
             'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
@@ -125,6 +157,7 @@ class BookController extends Controller
         $totalSelesai = $this->borrowingService->countByStatus('dikembalikan');
         $recentBooks = $this->bookService->getRecent(5);
 
+<<<<<<< HEAD
         return view('admin.dashboard', compact(
             'totalBuku',
             'totalDipinjam',
@@ -132,4 +165,21 @@ class BookController extends Controller
             'recentBooks'
         ));
     }
+=======
+public function anggota(Request $request)
+{
+    $query = Book::query();
+
+    // fitur search (opsional kalau sudah ada di UI)
+    if ($request->search) {
+        $query->where('judul', 'like', '%' . $request->search . '%')
+              ->orWhere('penulis', 'like', '%' . $request->search . '%');
+    }
+
+    $books = $query->latest()->paginate(10);
+
+    return view('anggota.katalog', compact('books'));
+}
+
+>>>>>>> 4cbfe0c1ccd138ae29ba694be9cba2bd5ba3058e
 }

@@ -16,6 +16,7 @@
                         <th>Buku</th>
                         <th>Tanggal</th>
                         <th>Status</th>
+                        <th>Token</th>
                         <th>Denda</th>
                         <th>Aksi</th>
                     </tr>
@@ -84,6 +85,7 @@
 
                         {{-- TOKEN PENGAMBILAN --}}
                         <td>
+<<<<<<< HEAD
                             @php $ts = $item->tokenStatus(); @endphp
 
                             @if($ts === 'active')
@@ -127,8 +129,26 @@
                                 <span class="text-muted" style="font-size:12px;">Menunggu approval</span>
                             @endif
                         </td>
+=======
+>>>>>>> 4cbfe0c1ccd138ae29ba694be9cba2bd5ba3058e
 
-                        
+                        {{-- TOKEN --}}
+                    @if($item->token && !$item->token_used)
+                <div>
+                    <span class="badge bg-warning text-dark">
+                        Token: <strong>{{ $item->token }}</strong>
+                    </span>
+                </div>
+                    <div style="margin-top:4px;">
+                        <small style="color:#ef4444;">
+                        Berlaku sampai:
+                        {{ \Carbon\Carbon::parse($item->token_expired_at)->format('d M Y H:i') }}
+                        </small>
+                    </div>
+                    @else
+                    <span class="text-muted">-</span>
+                    @endif
+                    </td>
 
                         {{-- DENDA --}}
                         <td>
@@ -144,10 +164,20 @@
                         {{-- AKSI --}}
                         <td>
                             @if($item->status == 'dipinjam')
+<<<<<<< HEAD
                                 <span class="text-primary" style="font-size:12px; font-weight:500;">Silahkan ambil/baca buku anda.</span>
                                 <div style="font-size:10px; color:#64748b; margin-top:2px;">
                                     (Serahkan fisik ke admin untuk mengembalikan)
                                 </div>
+=======
+                                <form action="{{ route('anggota.kembalikan', $item->id) }}" method="POST">
+    @csrf
+    <button type="submit" class="btn btn-success">
+        Kembalikan
+    </button>
+</form>
+
+>>>>>>> 4cbfe0c1ccd138ae29ba694be9cba2bd5ba3058e
                             @elseif($item->status == 'menunggu')
                                 <span class="text-muted" style="font-size:12px;">Menunggu approval admin</span>
                             @else

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LibroHub – Aplikasi Peminjaman Buku</title>
+    <title>Library – Aplikasi Peminjaman Buku</title>
 
     {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -221,6 +221,10 @@
             transition: all 0.18s ease;
         }
 
+        .btn-sm {
+    border-radius: 8px;
+}
+
         .btn-logout:hover {
             background: rgba(239, 68, 68, 0.2);
             color: #f87171;
@@ -310,6 +314,7 @@
         .btn-warning {
             font-weight: 500;
             font-size: 14px;
+            margin: 4px;
             border-radius: 8px !important;
             transition: all 0.18s ease;
         }
@@ -317,6 +322,7 @@
         .btn-danger {
             font-weight: 500;
             font-size: 14px;
+            margin: 4px;
             border-radius: 8px !important;
             transition: all 0.18s ease;
         }
@@ -378,6 +384,10 @@
         .table tbody tr:hover td {
             background: #f8fafc;
         }
+
+        .table td {
+    vertical-align: middle;
+}
 
         /* ── BADGES ── */
         .badge {
@@ -497,7 +507,7 @@
         <a href="{{ route('dashboard') }}" class="sidebar-logo">
             <div class="sidebar-logo-icon"><i class="ph-fill ph-book-open-text"></i></div>
             <div>
-                <div class="sidebar-logo-text">LibroHub</div>
+                <div class="sidebar-logo-text">Library</div>
                 <span class="sidebar-logo-sub">Perpustakaan Digital</span>
             </div>
         </a>
@@ -528,6 +538,19 @@
                 <i class="ph-duotone ph-clipboard-text"></i>
                 Data Peminjaman
             </a>
+
+            <a href="{{ route('anggota.index') }}"
+   class="nav-link-item {{ request()->routeIs('anggota.*') ? 'active' : '' }}">
+    <i class="ph-duotone ph-users"></i>
+    Kelola Anggota
+</a>
+
+<a href="{{ route('admin.laporan') }}"
+   class="nav-link-item {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
+    <i class="ph-duotone ph-chart-bar"></i>
+    Report
+</a>
+
         @endif
 
         @if(auth()->user()->role === 'anggota')
@@ -544,6 +567,8 @@
                 <i class="ph-duotone ph-clock-counter-clockwise"></i>
                 Riwayat Peminjaman
             </a>
+        
+
         @endif
 
         <div class="nav-section-label">Akun</div>

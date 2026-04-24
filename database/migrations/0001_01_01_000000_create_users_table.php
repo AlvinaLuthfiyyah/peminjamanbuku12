@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+<<<<<<< HEAD
             $table->string('role')->default('anggota'); // Admin / Anggota. Pakai string, bukan enum.
             
             // Kolom profil anggota
@@ -26,6 +27,9 @@ return new class extends Migration
             $table->string('nomor_anggota')->nullable()->unique();
             $table->string('photo')->nullable();
 
+=======
+            $table->enum('role', ['admin', 'anggota'])->default('anggota');
+>>>>>>> 4cbfe0c1ccd138ae29ba694be9cba2bd5ba3058e
             $table->rememberToken();
             $table->timestamps();
         });

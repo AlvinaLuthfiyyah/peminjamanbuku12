@@ -198,7 +198,7 @@
         <div class="auth-side-logo">
             <div class="auth-side-logo-icon"><i class="bi bi-book-half"></i></div>
             <div>
-                <div class="auth-side-brand">LibroHub</div>
+                <div class="auth-side-brand">Library</div>
                 <div class="auth-side-tagline">Perpustakaan Digital</div>
             </div>
         </div>
@@ -213,12 +213,18 @@
         </div>
 
         <div style="font-size:12px; opacity:0.6;">
-            © {{ date('Y') }} LibroHub. Semua hak dilindungi.
+            © {{ date('Y') }} Library. Semua hak dilindungi.
         </div>
     </div>
 
     {{-- MAIN FORM --}}
     <div class="auth-main">
+        
+        @if(session('success'))
+    <div class="alert alert-warning">
+        {{ session('success') }}
+    </div>
+@endif
 
         <div class="auth-title">Selamat Datang <i class="bi bi-person-check ms-1" style="color: #2563eb;"></i></div>
         <div class="auth-subtitle">Masuk ke akunmu untuk melanjutkan</div>

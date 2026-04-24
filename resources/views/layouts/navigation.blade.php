@@ -32,6 +32,18 @@
                             Data Peminjaman
                         </x-nav-link>
 
+                        <x-nav-link 
+                            :href="route('anggota.index')" 
+                            :active="request()->routeIs('anggota.*')">
+                            Kelola Anggota
+                        </x-nav-link>
+
+                        <x-nav-link 
+    :href="route('admin.laporan')" 
+    :active="request()->routeIs('admin.laporan')">
+    Report
+</x-nav-link>
+
                     @endif
 
 
@@ -109,20 +121,31 @@
             {{-- ================= ADMIN ================= --}}
             @if(auth()->user()->role === 'admin')
 
-                <x-responsive-nav-link 
-                    :href="route('books.index')" 
-                    :active="request()->routeIs('books.*')">
-                    Manajemen Buku
-                </x-responsive-nav-link>
+    <x-responsive-nav-link 
+        :href="route('books.index')" 
+        :active="request()->routeIs('books.*')">
+        Manajemen Buku
+    </x-responsive-nav-link>
 
-                <x-responsive-nav-link 
-                    :href="route('admin.borrowings')" 
-                    :active="request()->routeIs('admin.borrowings')">
-                    Data Peminjaman
-                </x-responsive-nav-link>
-                
+    <x-responsive-nav-link 
+        :href="route('admin.borrowings')" 
+        :active="request()->routeIs('admin.borrowings')">
+        Data Peminjaman
+    </x-responsive-nav-link>
 
-            @endif
+    <x-responsive-nav-link 
+        :href="route('anggota.index')" 
+        :active="request()->routeIs('anggota.*')">
+        Kelola Anggota
+    </x-responsive-nav-link>
+
+    <x-responsive-nav-link 
+        :href="route('admin.laporan')" 
+        :active="request()->routeIs('admin.laporan')">
+        Report
+    </x-responsive-nav-link>
+
+@endif
 
 
             {{-- ================= SISWA ================= --}}

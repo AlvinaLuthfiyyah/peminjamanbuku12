@@ -90,6 +90,7 @@
                         </td>
 
                         {{-- TOKEN --}}
+<<<<<<< HEAD
                         <td style="min-width:180px;">
                             @php $ts = $item->tokenStatus(); @endphp
 
@@ -136,6 +137,38 @@
                                 <span class="text-muted">—</span>
                             @endif
                         </td>
+=======
+<td style="min-width:160px;">
+
+    @if($item->token && !$item->token_used)
+
+        <div style="font-weight:700; color:#2563eb;">
+            {{ $item->token }}
+        </div>
+
+        {{-- EXPIRED --}}
+        @php $expAt = $item->token_expired_at ? \Carbon\Carbon::parse($item->token_expired_at) : null; @endphp
+
+        @if($expAt && $expAt->isPast())
+            <div style="font-size:11px; color:#ef4444;">
+                ❌ Expired
+            </div>
+        @else
+            <div style="font-size:11px; color:#64748b;">
+                Exp: {{ $expAt?->format('d M Y H:i') ?? '-' }}
+            </div>
+        @endif
+
+    @elseif($item->token_used)
+        <span style="font-size:12px; color:#10b981; font-weight:600;">
+            ✔ Digunakan
+        </span>
+    @else
+        -
+    @endif
+
+</td>
+>>>>>>> 4cbfe0c1ccd138ae29ba694be9cba2bd5ba3058e
 
                         {{-- STATUS --}}
                         <td>
@@ -150,10 +183,14 @@
 
                         {{-- DENDA --}}
                         <td>
-                            <span style="color:{{ $item->denda > 0 ? 'red' : 'green' }}">
-                                Rp {{ number_format($item->denda) }}
-                            </span>
-                        </td>
+    @if($item->denda > 0)
+        <span class="text-danger fw-bold">
+            Rp {{ number_format($item->denda, 0, ',', '.') }}
+        </span>
+    @else
+        <span class="text-success">Gratis</span>
+    @endif
+</td>
 
                         {{-- AKSI --}}
                         <td>
